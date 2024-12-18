@@ -1,0 +1,255 @@
+:root {
+    --primary-color: #166534;
+    --primary-light: #f0fdf4;
+    --primary-dark: #14532d;
+    --text-color: #1e293b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: min(480px, 90vw);
+    margin: auto;
+   
+}
+
+.opening-content {
+    text-align: center;
+    padding: 24px 16px;
+    
+}
+
+.opening-content h1 {
+    color: var(--primary-color);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.brand-title {
+    color: var(--primary-color);
+    font-family: 'Shrikhand', cursive;
+    font-size: clamp(2.25rem, 7vw, 3rem);
+    margin-bottom: 2rem;
+    font-style: normal;
+    line-height: 1.2;
+}
+
+.logo {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+}
+
+.logo img {
+    width: min(300px, 60vw);
+    height: min(300px, 60vw);
+    object-fit: contain;
+}
+
+.logo h2 {
+    color: var(--primary-color);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-style: italic;
+    line-height: 1.2;
+}
+
+.opening-content p {
+    color: var(--text-color);
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    line-height: 1.5;
+    margin: 2rem auto;
+    max-width: 90%;
+}
+
+.primary-btn, .secondary-btn {
+    display: block;
+    width: 100%;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    text-decoration: none;
+    text-align: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    margin-bottom: 1rem;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.secondary-btn {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-light);
+}
+
+/* Responsive design */
+@media screen and (min-width: 1200px) {
+    .container {
+        max-width: 520px;
+    }
+
+   
+}
+
+@media screen and (max-width: 768px) {
+    
+    .container {
+        max-width: 95vw;
+    }
+
+    .logo img {
+        width: min(260px, 55vw);
+        height: min(260px, 55vw);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding: 12px;
+       
+    }
+
+    .opening-content {
+        padding: 16px 12px;
+    }
+
+    .logo {
+        margin: 1.5rem auto;
+    }
+
+    .primary-btn, .secondary-btn {
+        padding: 0.75rem;
+    }
+    .brand-title {
+        margin-bottom: 1.5rem;
+    }
+    .logo img {
+        width: min(240px, 50vw);
+        height: min(240px, 50vw);
+    }
+}
+
+/* Small Mobile Devices */
+@media screen and (max-width: 360px) {
+    body {
+        padding: 8px;
+    }
+
+    .opening-content {
+        padding: 12px 8px;
+    }
+
+    .logo {
+        margin: 1rem auto;
+    }
+
+    .logo img {
+        width: min(200px, 45vw);
+        height: min(200px, 45vw);
+    }
+
+    
+}
+
+/* Height-based media queries */
+@media screen and (max-height: 700px) {
+    .logo {
+        margin: 1.5rem 0;
+    }
+
+    .logo img {
+        width: clamp(180px, 40vw, 260px);
+        height: clamp(180px, 40vw, 260px);
+    }
+}
+
+/* For very small heights */
+@media screen and (max-height: 600px) {
+    body {
+        align-items: flex-start;
+    }
+
+    .container {
+        margin: 1rem auto;
+    }
+    
+    .logo {
+        margin: 1rem 0;
+    }
+    
+    .logo img {
+        width: min(180px, 40vw);
+        height: min(180px, 40vw);
+    }
+}
+
+/* Handle zoom levels */
+@media screen and (min-width: 1200px) and (min-height: 800px) {
+    .container {
+        transform: scale(1);
+        transform-origin: center center;
+    }
+}
+
+@media screen and (max-width: 320px), (max-height: 500px) {
+    body {
+        align-items: flex-start;
+        padding: 4px;
+    }
+
+    .container {
+        margin: 0.5rem auto;
+    }
+
+    .logo img {
+        width: 160px;
+        height: 160px;
+    }
+
+    .opening-content h1 {
+        font-size: 1.25rem;
+    }
+
+    .logo h2 {
+        font-size: 1.75rem;
+    }
+    .brand-title {
+        font-size: 1.75rem;
+    }
+}

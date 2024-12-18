@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thriftify - Register</title>
+    <link rel="stylesheet" href="../../css/auth.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-text">
+            <h1>Hai, silakan daftar</h1>
+            <h2>untuk masuk ke Thriftify!</h2>
+        </div>
+
+        <div class="form-box">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Masukkan username">
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Nama Lengkap</label>
+                    <input type="text" id="fullName" placeholder="Masukkan nama lengkap">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Masukkan email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-input">
+                        <input type="password" id="password" placeholder="Masukkan password">
+                        <button type="button" class="toggle-password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terms-check">
+                    <label>
+                        <input type="checkbox" id="terms">
+                        <span>Saya menerima ketentuan penggunaan dan kebijakan privasi</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn">Daftar</button>
+
+                <div class="switch-mode">
+                    <span>Sudah memiliki akun? </span>
+                    <a href="login.html" class="switch-link">Masuk di sini</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+</body>
+</html>

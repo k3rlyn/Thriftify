@@ -1,118 +1,84 @@
-// DOM Elements
-const openingScreen = document.getElementById('openingScreen');
-const authContainer = document.getElementById('authContainer');
-const authForm = document.getElementById('authForm');
-const welcomeHeader = document.getElementById('welcomeHeader');
-const welcomeSub = document.getElementById('welcomeSub');
-const usernameGroup = document.getElementById('usernameGroup');
-const loginExtras = document.getElementById('loginExtras');
-const termsGroup = document.getElementById('termsGroup');
-const submitBtn = document.getElementById('submitBtn');
-const switchModeBtn = document.getElementById('switchMode');
-const switchText = document.getElementById('switchText');
-const termsModal = document.getElementById('termsModal');
-const showTermsBtn = document.getElementById('showTerms');
-const closeModalBtn = document.querySelector('.close-modal');
-const acceptTermsBtn = document.querySelector('.accept-terms');
-const termsCheckbox = document.getElementById('terms');
-const togglePasswordBtn = document.querySelector('.toggle-password');
-const passwordInput = document.getElementById('password');
-
-// State
-let isLoginMode = true;
-let passwordVisible = false;
-
-// Functions
-function showAuth(mode) {
-    openingScreen.style.display = 'none';
-    authContainer.style.display = 'block';
-    isLoginMode = mode === 'login';
-    updateAuthUI();
-}
-
-function updateAuthUI() {
-    welcomeHeader.textContent = isLoginMode ? 
-        'Selamat datang kembali' : 
-        'Hai, silakan daftar';
-    welcomeSub.textContent = isLoginMode ? 
-        'di Thriftify! 👋' : 
-        'untuk masuk ke Thriftify!';
-    submitBtn.textContent = isLoginMode ? 'Masuk' : 'Daftar';
-    switchText.textContent = isLoginMode ? 
-        'Belum memiliki akun?' : 
-        'Sudah memiliki akun?';
-    switchModeBtn.textContent = isLoginMode ? 'Daftar di sini' : 'Masuk di sini';
+document.addEventListener('DOMContentLoaded', function() {
+    // Check current page
+    const isLoginPage = window.location.pathname.includes('login');
     
-    usernameGroup.style.display = isLoginMode ? 'none' : 'block';
-    loginExtras.style.display = isLoginMode ? 'flex' : 'none';
-    termsGroup.style.display = isLoginMode ? 'none' : 'block';
-    
-    authForm.reset();
-}
+    // Shared DOM Elements
+    const form = document.querySelector('form');
+    const togglePasswordBtn = document.querySelector('.toggle-password');
+    const passwordInput = document.getElementById('password');
 
-function toggleAuthMode() {
-    isLoginMode = !isLoginMode;
-    updateAuthUI();
-}
-
-function togglePassword() {
-    passwordVisible = !passwordVisible;
-    passwordInput.type = passwordVisible ? 'text' : 'password';
-    togglePasswordBtn.innerHTML = passwordVisible ? 
-        '<i class="fa-regular fa-eye-slash"></i>' : 
-        '<i class="fa-regular fa-eye"></i>';
-}
-
-function showTermsModal() {
-    termsModal.style.display = 'flex';
-}
-
-function closeTermsModal() {
-    termsModal.style.display = 'none';
-}
-
-function acceptTerms() {
-    termsCheckbox.checked = true;
-    closeTermsModal();
-}
-
-function handleSubmit(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(authForm);
-    const data = Object.fromEntries(formData);
-    
-    if (!data.email || !data.password) {
-        alert('Mohon lengkapi semua field yang diperlukan');
-        return;
+      // Function to validate email
+      function isValidEmail(email) {
+        return email.includes('@');
     }
-    
-    if (!isLoginMode) {
-        if (!data.username) {
-            alert('Username wajib diisi');
-            return;
-        }
-        if (!termsCheckbox.checked) {
-            alert('Anda harus menyetujui syarat dan ketentuan');
-            return;
+
+    // Toggle password visibility
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', function() {
+            const isVisible = passwordInput.type === 'text';
+            passwordInput.type = isVisible ? 'password' : 'text';
+            togglePasswordBtn.innerHTML = isVisible ? 
+                '<i class="fa-regular fa-eye"></i>' : 
+                '<i class="fa-regular fa-eye-slash"></i>';
+        });
+    }
+
+    // Form submission
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Validasi dasar
+            if (!data.email || !data.password) {
+                alert('Mohon lengkapi semua field yang diperlukan');
+                return;
+            }
+            
+            if (!isLoginPage) {
+                // Validasi tambahan untuk register
+                if (!data.username) {
+                    alert('Username wajib diisi');
+                    return;
+                }
+                
+                const termsCheckbox = document.getElementById('terms');
+                if (!termsCheckbox?.checked) {
+                    alert('Anda harus menyetujui syarat dan ketentuan');
+                    return;
+                }
+            }
+            
+            // Handle form submission
+            console.log('Form submitted:', data);
+            // Taro untuk api call disini
+            
+            // Contoh redirect setelah submit berhasil
+            // window.location.href = isLoginPage ? '../dashboard/index.html' : 'login.html';
+        });
+    }
+
+    // Terms & Conditions handling for register page
+    const termsCheck = document.querySelector('.terms-check');
+    if (termsCheck) {
+        const termsText = termsCheck.querySelector('span');
+        if (termsText) {
+            termsText.addEventListener('click', function() {
+                // Handle terms click - bisa menampilkan modal atau redirect ke halaman terms
+                console.log('Terms clicked');
+                // Implementasi terms & conditions bisa ditambahkan di sini
+            });
         }
     }
-    
-    console.log('Form submitted:', data);
-    // Add your API call here
-}
 
-// Event Listeners
-switchModeBtn.addEventListener('click', toggleAuthMode);
-togglePasswordBtn.addEventListener('click', togglePassword);
-showTermsBtn.addEventListener('click', showTermsModal);
-closeModalBtn.addEventListener('click', closeTermsModal);
-acceptTermsBtn.addEventListener('click', acceptTerms);
-authForm.addEventListener('submit', handleSubmit);
-
-// Close modal when clicking outside
-window.addEventListener('click', (e) => {
-    if (e.target === termsModal) {
-        closeTermsModal();
+    // Remember me functionality for login page
+    const rememberCheck = document.getElementById('remember');
+    if (rememberCheck) {
+        rememberCheck.addEventListener('change', function() {
+            // Implement remember me logic
+            console.log('Remember me:', this.checked);
+        });
     }
 });

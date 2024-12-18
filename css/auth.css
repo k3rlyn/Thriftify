@@ -13,94 +13,27 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--primary-light);
-    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 100%;
+    padding: 16px;
 }
 
 .container {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 1.5rem;
+    max-width: min(480px, 90vw);
+    margin: auto;
 }
 
-/* Opening Screen */
-.opening-content {
-    text-align: center;
-    padding: 2rem;
-}
-
-.logo {
-    margin: 3rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.logo img {
-    width: 180px;
-    height: 180px;
-}
-
-.logo h2 {
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    font-style: italic;
-}
-
-.opening-content p {
-    color: var(--text-color);
-    margin-bottom: 2rem;
-}
-
-/* Buttons */
-.primary-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-bottom: 1rem;
-}
-
-.primary-btn:hover {
-    background-color: var(--primary-dark);
-}
-
-.secondary-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: white;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.secondary-btn:hover {
-    background-color: var(--primary-light);
-}
-
-.text-btn {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    cursor: pointer;
-    font-size: inherit;
-}
-
-/* Form styles */
 .welcome-text {
     text-align: center;
     margin-bottom: 2rem;
@@ -108,20 +41,20 @@ body {
 
 .welcome-text h1 {
     color: var(--primary-color);
-    font-size: 1.5rem;
+    font-size: clamp(1.5rem, 5vw, 2rem);
     margin-bottom: 0.5rem;
 }
 
-.welcome-text p {
-    color: var(--text-color);
-    font-size: 1.25rem;
+.welcome-text h2 {
+    color: var(--primary-color);
+    font-size: clamp(1rem, 4vw, 1.25rem);
 }
 
 .form-box {
     background: white;
     padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .form-group {
@@ -130,24 +63,29 @@ body {
 
 .form-group label {
     display: block;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group input {
     width: 100%;
-    padding: 0.75rem;
+    padding: 1rem;
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     font-size: 1rem;
+    background: white;
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
 }
 
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(22, 101, 52, 0.2);
+    box-shadow: 0 0 0 2px rgba(22, 101, 52, 0.1);
 }
 
 /* Password input */
@@ -164,69 +102,103 @@ body {
     border: none;
     color: #64748b;
     cursor: pointer;
-}
-
-/* Remember me & Forgot password */
-#loginExtras {
+    padding: 0.25rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
 }
 
+/* Remember me */
 .remember-me {
+    margin-bottom: 1.5rem;
+}
+
+.remember-me label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.forgot-password {
+    gap: 0.75rem;
+    cursor: pointer;
     color: var(--primary-color);
-    text-decoration: none;
-}
-
-/* Switch mode text */
-.switch-mode {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: #64748b;
     font-size: 0.875rem;
 }
 
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+.remember-me input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Submit button */
+.submit-btn {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    align-items: center;
-    justify-content: center;
     padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 1.5rem;
 }
 
-.modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    max-width: 600px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
+.submit-btn:hover {
+    background-color: var(--primary-dark);
 }
 
-.modal-buttons {
+/* Switch mode text */
+.switch-mode span {
+    color: var(--primary-color);
+}
+
+.switch-mode {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.switch-link {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.switch-link:hover {
+    opacity: 0.9;
+}
+
+/* Style untuk terms checkbox */
+.terms-check {
+    margin-bottom: 1.5rem;
+}
+
+.terms-check label {
     display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 0.875rem;
 }
 
-/* Responsive design */
-@media (max-width: 480px) {
-    .container {
-        padding: 1rem;
+.terms-check input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 480px) {
+    body {
+        padding: 12px;
     }
 
     .form-box {
@@ -234,25 +206,12 @@ body {
     }
 }
 
-@media (max-width: 360px) {
-    .welcome-text h1 {
-        font-size: 1.25rem;
-    }
-
-    .welcome-text p {
-        font-size: 1rem;
-    }
-
+@media screen and (max-width: 360px) {
     .form-box {
-        padding: 1rem;
+        padding: 1.25rem;
     }
 
-    .logo img {
-        width: 150px;
-        height: 150px;
-    }
-
-    .logo h2 {
-        font-size: 2rem;
+    .form-group input {
+        padding: 0.875rem;
     }
 }

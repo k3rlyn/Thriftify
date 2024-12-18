@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thriftify - Login</title>
+    <link rel="stylesheet" href="../../css/auth.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-text">
+            <h1>Selamat datang kembali</h1>
+            <h1>di Thriftify! 👋</h1>
+        </div>
+
+        <div class="form-box">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Masukkan email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-input">
+                        <input type="password" id="password" placeholder="Masukkan password">
+                        <button type="button" class="toggle-password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <label>
+                        <input type="checkbox" id="remember">
+                        <span>Simpan password</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn">Masuk</button>
+
+                <div class="switch-mode">
+                    <span>Belum memiliki akun? </span>
+                    <a href="register.html" class="switch-link">Daftar di sini</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+</body>
+</html>
