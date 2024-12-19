@@ -13,18 +13,18 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-html, body {
+html{
     height: 100%;
     width: 100%;
-    overflow-x: hidden;
+  
 }
 
 body {
     background-color: var(--primary-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100%;
+    width: 100%;
+   
+    overflow: auto; /* Tambahkan ini */
     padding: 16px;
 }
 
@@ -32,6 +32,7 @@ body {
     width: 100%;
     max-width: min(480px, 90vw);
     margin: auto;
+    padding-bottom: 32px;
 }
 
 .welcome-text {
