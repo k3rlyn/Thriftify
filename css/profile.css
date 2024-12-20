@@ -1,0 +1,51 @@
+/* Gaya CSS untuk mengatur tampilan form */
+:root {
+    --primary-color: #166534;
+    --primary-light: #f0fdf4;
+    --primary-dark: #14532d;
+    --text-color: #1e293b;
+    --border-color: #e2e8f0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px;
+    background-color: #e5f5e0;
+    border-radius: 20px;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.inner-container {
+    padding: 20px;
+    border-radius: 20px; /* Membuat sudut membulat */
+    width: 80%; /* Atur lebar inner container (sesuaikan sesuai kebutuhan) */
+    margin: 0 auto; /* Membuat inner container berada di tengah */
+    background-color: #e5f5e0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
