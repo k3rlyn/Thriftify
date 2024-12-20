@@ -97,6 +97,7 @@ html, body {
 
 .form-group input {
     max-width: 100%;
+    width: 100%;
     padding: 1rem;
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
@@ -117,6 +118,7 @@ html, body {
 /* Password input */
 .password-input {
     position: relative;
+    width: 100%;
 }
 
 .toggle-password {
