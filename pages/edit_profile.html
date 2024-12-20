@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profil Toko</title>
+    <title>Edit Profil</title>
     <link rel="stylesheet" href="/css/profile.css">
 </head>
 <body>
-    <h1>Edit Profil Toko</h1>
+    <h1>Edit Profil</h1>
     <div class="form-container">
         <form id="edit-profile-form">
+            <img src="../assets/profile.jpeg" alt="foto profil">
             <div class="form-group">
-                <label for="nama-toko">Nama Toko:</label>
+                <label for="nama">Nama:</label>
                 <input type="text" id="nama-toko" name="nama-toko" required>
             </div>
             <div class="form-group">
-                <label for="email">Email Toko:</label>
+                <label for="username">Username:</label>
+                <input type="username" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
-                <label for="alamat">Alamat Toko:</label>
+                <label for="alamat">Alamat:</label>
                 <textarea id="alamat" name="alamat" required></textarea>
             </div>
             <div class="form-group">
@@ -27,11 +32,11 @@
                 <input type="tel" id="telepon" name="telepon" required>
             </div>
             <div class="form-group">
-                <label for="logo">Logo Toko:</label>
+                <label for="logo">Foto Profile:</label>
                 <input type="file" id="logo" name="logo" accept="image/*">
             </div>
             <div class="form-group">
-                <label for="deskripsi">Deskripsi Toko:</label>
+                <label for="deskripsi">Bio:</label>
                 <textarea id="deskripsi" name="deskripsi"></textarea>
             </div>
             <button type="submit">Simpan Perubahan</button>
