@@ -14,25 +14,43 @@
 }
 
 html{
-    height: 100%;
-    width: 100%;
+    height: auto;
+    width: auto;
   
 }
 
 body {
     background-color: var(--primary-light);
-    min-height: 100%;
-    width: 100%;
-   
-    overflow: auto; /* Tambahkan ini */
+    height: auto;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto; 
     padding: 16px;
+    margin: 0;
 }
+
+html, body {
+    overflow: auto; /* scroll vertikal diaktifkan */
+    height: auto;
+    width: auto;
+}
+
+.container, .form-box {
+    overflow: visible; /* elemen dapat diperluas */
+}
+
 
 .container {
     width: 100%;
-    max-width: min(480px, 90vw);
+    max-width:90%;
     margin: auto;
     padding-bottom: 32px;
+    height: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .welcome-text {
@@ -53,13 +71,20 @@ body {
 
 .form-box {
     background: white;
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 1.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: auto;
+    width: 100%;
+    overflow: visible;  /* aktifkan scroll untuk isi */
+    margin-bottom: 20px;
 }
 
 .form-group {
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .form-group label {
@@ -71,7 +96,7 @@ body {
 }
 
 .form-group input {
-    width: 100%;
+    max-width: 100%;
     padding: 1rem;
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
@@ -107,8 +132,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-}
+    width: 24px;
+    height: 24px;
 
+}
+.toggle-password svg {
+    width: 100%;
+    height: 100%;
+}
 /* Remember me */
 .remember-me {
     margin-bottom: 1.5rem;
@@ -164,7 +195,7 @@ body {
 
 .switch-link {
     color: var(--primary-dark);
-    text-decoration: underline;
+    text-decoration:none;
     font-weight: 500;
     cursor: pointer;
 }
@@ -199,20 +230,53 @@ body {
 /* Responsive adjustments */
 @media screen and (max-width: 480px) {
     body {
-        padding: 12px;
+        padding: 1rem;
+        height: auto;
+        overflow-y: auto;
     }
 
     .form-box {
         padding: 1.5rem;
     }
+     .welcome-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .welcome-text h2 {
+        font-size: 1rem;
+    }
+    .container {
+        padding-bottom: 120px;
+        height: auto;
+    }
 }
 
 @media screen and (max-width: 360px) {
     .form-box {
-        padding: 1.25rem;
+        padding: 0.75rem;
     }
 
     .form-group input {
         padding: 0.875rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .form-box {
+        padding: 1rem;
+    }
+
+    .welcome-text h1 {
+        font-size: clamp(1.25rem, 5vw, 2rem); /* Ukuran lebih kecil */
+    }
+
+    .welcome-text h2 {
+        font-size: clamp(1rem, 4vw, 1.5rem);
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .form-box {
+        padding: 1rem;
     }
 }
