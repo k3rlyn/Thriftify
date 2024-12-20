@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     // Redirect to dashboard
-                    window.location.href = '/dashboard';
+                    window.location.href = '../pages/landingPage.html';
                 }
 
             } catch (error) {
