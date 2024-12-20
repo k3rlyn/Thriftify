@@ -6,6 +6,20 @@
     <link rel="stylesheet" href="../css/daftartoko.css">
 </head>
 <body>
+    <!-- HEADER NAVIGATION -->
+    <header class="header">
+        <div class="logo">
+            <img src="../assets/logo.png" alt="Logo Thriftify">Thriftify
+        </div>
+        
+        <nav class="nav">
+        <ul>
+            <li><a href="./landingPage.html">Home</a></li>
+            <li><a href="../pages/edit_profile.html">Profil</a></li>
+            <li><a href="../pages/daftartoko.html">Toko</a></li>
+        </ul>
+        </nav>
+    </header>
     <h1>Form Toko</h1>
     <div class="form-container">
         <form id="storeRegistrationForm">
@@ -17,6 +31,15 @@
             <div class="form-group">
                 <label for="storeDescription">Deskripsi Toko</label>
                 <textarea id="storeDescription" name="storeDescription" rows="4" required></textarea>
+            </div>
+
+            <!-- Profile Picture Upload -->
+            <div class="form-group">
+                <label for="profilePicture">Foto Profil Toko (Opsional)</label>
+                <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
+                <div id="profilePreview" class="profile-preview">
+                    <img id="previewImage" src="" alt="Preview Foto Profil" style="display: none;">
+                </div>
             </div>
 
             <div class="form-group">
@@ -52,9 +75,7 @@
 
             <div class="terms-checkbox">
                 <input type="checkbox" id="termsAndConditions" name="termsAndConditions" required>
-                <label for="termsAndConditions">
-                    Saya setuju dengan
-                </label>
+                <label for="termsAndConditions">Saya setuju dengan</label>
                 <span id="termsLink" class="terms-link">Syarat dan Ketentuan</span>
             </div>
 
@@ -62,15 +83,6 @@
         </form>
     </div>
 
-    <!-- Modal Syarat dan Ketentuan -->
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <h2>Terms and Conditions</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris accumsan orci ac mi aliquet bibendum. Pellentesque mollis nisi et ultrices lacinia. Nulla ullamcorper quam sapien, ut ultricies augue euismod eleifend. Suspendisse vel leo viverra, ultrices lacus convallis, fermentum erat. Morbi quam massa, pretium sit amet tortor vitae, sagittis vehicula sapien. Vivamus pretium mollis venenatis. Mauris condimentum rutrum laoreet. Nunc euismod mi nec rhoncus posuere. Suspendisse euismod bibendum dui, eu sollicitudin nisi consectetur sagittis. Praesent porta felis sit amet nisl maximus, ac aliquet augue placerat. Fusce rutrum leo et eros pulvinar, non faucibus enim finibus. Aenean nec ultrices elit, ac dignissim lorem. Vestibulum rutrum ex vitae quam suscipit lobortis. Cras id mauris non diam bibendum iaculis. Quisque gravida diam turpis, ac bibendum tortor gravida malesuada.</p>
-            <p>Nullam eu volutpat risus. Maecenas consequat consequat arcu id eleifend. Aliquam risus urna, sodales quis erat eget, ultricies tempus urna. Vivamus ornare, tortor vel luctus tincidunt, mi odio rutrum ligula, in accumsan enim velit sed erat. Maecenas justo arcu, suscipit a nisl eu, lacinia pulvinar risus. Nulla laoreet tempor dolor eget dictum. Aliquam erat volutpat. Cras sit amet tortor a lectus luctus tempus. Phasellus bibendum, sem ut varius venenatis, lacus eros sodales massa, ac efficitur urna risus ac mauris. Aenean et tempus magna. Donec fringilla odio gravida est egestas porta. Duis hendrerit volutpat lacus quis facilisis. Pellentesque nec felis ut urna dapibus hendrerit at eget lacus. Proin tristique eros ut lacus tempor, vitae dapibus erat euismod.</p>
-        </div>
-    </div>
     <script src="../js/daftartoko.js"></script>
 </body>
 </html>
