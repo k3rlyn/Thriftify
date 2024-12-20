@@ -17,8 +17,47 @@ body {
     background-color: var(--primary-light);
     color: var(--text-color);
     line-height: 1.6;
-    margin-top: 2rem;
 }
+ /* Header */
+ .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #e5f5e0;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center; /* Menjaga logo dan teks sejajar vertikal */
+    gap: 10px; /* Jarak antara gambar logo dan teks */
+    color: var(--primary-color);
+    font-family: 'Shrikhand', cursive;
+    font-size: clamp(2rem, 6vw, 1rem);
+    font-style: normal;
+    line-height: 1.2;
+  }
+  
+  .logo img {
+    width: auto;
+    max-width: 120px; /* Maksimal lebar logo */
+    max-height: 60px; /* Maksimal tinggi logo */
+    object-fit: contain;
+  }
+  
+  .nav ul {
+    display: flex;
+    list-style: none;
+  }
+  
+  .nav a {
+    text-decoration: none;
+    margin-left: 20px;
+    color: #333;
+    font-weight: 500;
+  }
 
 h1 {
     color: var(--primary-color);
