@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         localStorage.setItem('rememberedEmail', email);
                     }
 
-                    // Redirect to dashboard
+                    // Redirect to landing page
                     window.location.href = '../pages/landingPage.html';
                 }
 
