@@ -94,4 +94,23 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'after_daftartoko.html';
         }
     });
+
+    const profilePictureInput = document.getElementById('profilePicture');
+    const previewImage = document.getElementById('previewImage');
+    
+    // Handle Profile Picture Preview
+    profilePictureInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+        }
+    });
 });

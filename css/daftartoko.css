@@ -180,6 +180,20 @@ h1 {
     color: black;
 }
 
+.profile-preview {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.profile-preview img {
+    width: 150px;
+    height: 150px;
+    border-radius: 0.75rem;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    display: inline-block;
+}
+
 @media screen and (max-width: 768px) {
     .category-selection {
         grid-template-columns: repeat(2, 1fr);

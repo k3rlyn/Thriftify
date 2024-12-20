@@ -22,9 +22,10 @@ body {
 
 h1 {
     color: var(--primary-color);
-text-align: center;
-margin-bottom: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
 }
+
 .container {
     margin: 20px auto;
     max-width: 900px;
@@ -36,21 +37,52 @@ margin-bottom: 1.5rem;
 }
 
 .card {
+    display: flex; /* Flexbox layout */
+    gap: 2rem; /* Spacing between profile picture and text */
+    align-items: center; /* Center content vertically */
     background-color: var(--primary-light);
     border-radius: 1rem;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     border: 1px solid var(--border-color);
 }
 
-.card h3 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
+.profile-picture-container {
+    position: relative;
+    flex-shrink: 0; /* Prevent shrinking of profile picture */
 }
 
-.card p {
-    margin-bottom: 0.5rem;
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 1rem;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+}
+
+.upload-overlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.card-content {
+    flex: 1; /* Allow text content to take up remaining space */
+}
+
+.store-info {
+    display: flex;
+    flex-direction: column; /* Stack text vertically */
+}
+
+.store-info p {
+    margin-bottom: 0.75rem;
 }
 
 .stats {
@@ -95,7 +127,8 @@ margin-bottom: 1.5rem;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .btn:hover {
@@ -109,5 +142,21 @@ margin-bottom: 1.5rem;
 
     .container {
         padding: 1rem;
+    }
+    
+    .card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-picture {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .store-info {
+        width: 100%;
+        text-align: left;
     }
 }
