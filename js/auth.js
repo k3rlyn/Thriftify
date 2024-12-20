@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Check current page
     const isLoginPage = window.location.pathname.includes('login');
+    const API_URL = 'http://localhost:3000/api/auth';
     
     // Shared DOM Elements
     const form = document.querySelector('form');
     const togglePasswordBtn = document.querySelector('.toggle-password');
     const passwordInput = document.getElementById('password');
 
-      // Function to validate email
-      function isValidEmail(email) {
+    // Function to validate email
+    function isValidEmail(email) {
         return email.includes('@');
     }
 
@@ -29,62 +29,117 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Function to show error message
+    function showError(message) {
+        alert(message); // Bisa diganti dengan UI yang lebih baik
+    }
+
+    // Function to save token to localStorage
+    function saveToken(token) {
+        localStorage.setItem('token', token);
+    }
+
+    // Function to handle API errors
+    async function handleResponse(response) {
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Terjadi kesalahan');
+        }
+        return data;
+    }
+
     // Form submission
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            // Validasi dasar
-            if (!data.email || !data.password) {
-                alert('Mohon lengkapi semua field yang diperlukan');
-                return;
+            // Basic validation
+            if (!email || !password) {
+                return showError('Mohon lengkapi semua field yang diperlukan');
             }
-            
-            if (!isLoginPage) {
-                // Validasi tambahan untuk register
-                if (!data.username) {
-                    alert('Username wajib diisi');
-                    return;
-                }
-                
-                const termsCheckbox = document.getElementById('terms');
-                if (!termsCheckbox?.checked) {
-                    alert('Anda harus menyetujui syarat dan ketentuan');
-                    return;
-                }
+
+            if (!isValidEmail(email)) {
+                return showError('Format email tidak valid');
             }
-            
-            // Handle form submission
-            console.log('Form submitted:', data);
-            // Taro untuk api call disini
-            
-            // Contoh redirect setelah submit berhasil
-            // window.location.href = isLoginPage ? '../dashboard/index.html' : 'login.html';
+
+            try {
+                const endpoint = isLoginPage ? 'login' : 'register';
+                const data = { email, password };
+
+                if (!isLoginPage) {
+                    // Add register-specific fields
+                    const username = document.getElementById('username').value;
+                    const fullName = document.getElementById('fullName').value;
+                    const termsCheckbox = document.getElementById('terms');
+
+                    if (!username || !fullName) {
+                        return showError('Mohon lengkapi semua field');
+                    }
+
+                    if (!termsCheckbox?.checked) {
+                        return showError('Anda harus menyetujui syarat dan ketentuan');
+                    }
+
+                    Object.assign(data, { 
+                        username,
+                        fullName
+                    });
+                }
+
+                // Make API call
+                const response = await fetch(`${API_URL}/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await handleResponse(response);
+
+                // Handle successful response
+                if (result.token) {
+                    saveToken(result.token);
+                    
+                    // Handle "Remember me" for login
+                    if (isLoginPage && document.getElementById('remember')?.checked) {
+                        localStorage.setItem('rememberedEmail', email);
+                    }
+
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message || 'Terjadi kesalahan, silakan coba lagi');
+            }
         });
     }
 
-    // Terms & Conditions handling for register page
+    // Load remembered email if exists
+    if (isLoginPage) {
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('remember').checked = true;
+        }
+    }
+
+    // Terms & Conditions handling
     const termsCheck = document.querySelector('.terms-check');
     if (termsCheck) {
         const termsText = termsCheck.querySelector('span');
         if (termsText) {
-            termsText.addEventListener('click', function() {
-                // Handle terms click - bisa menampilkan modal atau redirect ke halaman terms
-                console.log('Terms clicked');
-                // Implementasi terms & conditions bisa ditambahkan di sini
+            termsText.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    // Handle terms click - bisa menampilkan modal atau redirect
+                    alert('Syarat dan ketentuan akan ditampilkan di sini');
+                }
             });
         }
-    }
-
-    // Remember me functionality for login page
-    const rememberCheck = document.getElementById('remember');
-    if (rememberCheck) {
-        rememberCheck.addEventListener('change', function() {
-            // Implement remember me logic
-            console.log('Remember me:', this.checked);
-        });
     }
 });

@@ -224,6 +224,22 @@ h1 {
     text-align: center;
 }
 
+.nav a {
+    text-decoration: none;
+    margin-left: 20px;
+    color: #333;
+    font-weight: 500;
+    padding-bottom: 5px;
+    position: relative;
+}
+.nav a.active {
+    color: var(--primary-color);
+}
+.nav ul {
+    display: flex;
+    list-style: none;
+}
+
 .profile-preview img {
     width: 150px;
     height: 150px;
@@ -231,6 +247,23 @@ h1 {
     object-fit: cover;
     border: 1px solid var(--border-color);
     display: inline-block;
+}
+
+.nav a.active {
+    color: var(--primary-color);
+    font-weight: 600;
+    position: relative;
+}
+
+.nav a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
 }
 
 @media screen and (max-width: 768px) {
