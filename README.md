@@ -8,6 +8,17 @@ Smart Thrifting Marketplace bernama Thriftify merupakan sebuah layanan platform 
 
 Prototype yang dikembangkan berfokus pada proses bisnis manajemen penjual yang diimplementasikan dalam bentuk website Thriftify. Melalui website Thriftify, user dapat melakukan autentikasi (register dan login), update profil akun, membuka/mendaftarkan toko, update profil toko, dan daftar unggahan/postingan produk barang bekas (second-hand) yang dijual oleh user lain.
 
+## Dokumen Laporan Deliverable
+
+https://drive.google.com/file/d/1cJB3Rdgd6omn9EV9pnPpjMp5Sj6wy7Hx/view?usp=sharing
+
+## Dokumen PPT Deliverable
+
+https://drive.google.com/file/d/1zQ52hJxuG9yJoFlafPNsOCYe-En86jIO/view?usp=sharing
+
+## Dokumen Panduan/Petunjuk Penggunaan Prototype
+
+https://drive.google.com/file/d/1hvls7tpqK3NvGyZuZ9CGbrvTB7nbYgZt/view?usp=sharing
 
 ## Disusun oleh:
 
