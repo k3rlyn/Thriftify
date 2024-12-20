@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const isLoginPage = window.location.pathname.includes('login');
-    const API_URL = 'http://localhost:3000/api/auth';
+    const API_URL = 'https://thriftify.vercel.app/api/auth';
     
     // Shared DOM Elements
     const form = document.querySelector('form');
