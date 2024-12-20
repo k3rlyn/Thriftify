@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     // Redirect to landing page
-                    window.location.href = '../pages/landingPage.html';
+                    window.location.href = 'https://thriftify.vercel.app/landingPage.html';
                 }
 
             } catch (error) {
