@@ -1,14 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const AuthController = require('../controllers/authController');
 
-function initAuthRoutes(db) {
-   const AuthController = require('../controllers/authController');
-   const authController = new AuthController(db);
+const authController = new AuthController();
 
-   router.post('/register', (req, res) => authController.register(req, res));
-   router.post('/login', (req, res) => authController.login(req, res));
+// Logging untuk debug
+router.use((req, res, next) => {
+    console.log(`Auth Route accessed: ${req.method} ${req.path}`);
+    next();
+});
 
-   return router;
-}
+// Define routes
+router.post('/login', (req, res) => authController.login(req, res));
+router.post('/register', (req, res) => authController.register(req, res));
 
-module.exports = initAuthRoutes;
+// Add test route
+router.get('/test', (req, res) => {
+    res.json({ message: 'Auth route is working' });
+});
+
+module.exports = router;

@@ -1,65 +1,93 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 class AuthController {
-    constructor(db) {
-        this.db = db;
-        this.collection = db.collection('users');
+    constructor() {
+        this.JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
+        this.TOKEN_EXPIRY = '24h';
+    }
+
+    generateToken(userId) {
+        return jwt.sign(
+            { userId },
+            this.JWT_SECRET,
+            { expiresIn: this.TOKEN_EXPIRY }
+        );
+    }
+
+    sanitizeUserData(user) {
+        return {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            createdAt: user.createdAt
+        };
     }
 
     async register(req, res) {
         try {
             const { username, email, password, fullName } = req.body;
 
-            // Validate input
-            const errors = User.validate({ username, email, password, fullName });
-            if (errors.length > 0) {
-                return res.status(400).json({ errors });
-            }
-
-            // Check if user already exists
-            const existingUser = await this.collection.findOne({ 
-                $or: [{ email }, { username }] 
-            });
-            
-            if (existingUser) {
-                return res.status(400).json({ 
-                    error: 'Email atau username sudah terdaftar' 
+            // Basic input validation
+            if (!username || !email || !password || !fullName) {
+                return res.status(400).json({
+                    error: 'Semua field harus diisi'
                 });
             }
 
-            // Hash password
-            const hashedPassword = await bcrypt.hash(password, 10);
+            // Check existing user
+            const userExists = await User.findOne({
+                $or: [
+                    { email: email.toLowerCase() },
+                    { username: username.toLowerCase() }
+                ]
+            });
 
-            // Create new user
-            const user = new User(username, email, hashedPassword, fullName);
-            
-            // Save to database
-            const result = await this.collection.insertOne(user);
+            if (userExists) {
+                return res.status(400).json({
+                    error: userExists.email === email.toLowerCase() ?
+                        'Email sudah terdaftar' :
+                        'Username sudah digunakan'
+                });
+            }
 
-            // Generate JWT token
-            const token = jwt.sign(
-                { userId: user._id.toString() }, 
-                process.env.JWT_SECRET || 'fallback-secret-key',
-                { expiresIn: '24h' }
-            );
+            // Create user
+            const user = await User.create({
+                username: username.toLowerCase(),
+                email: email.toLowerCase(),
+                password,
+                fullName
+            });
+
+            // Generate token
+            const token = this.generateToken(user._id);
+
+            // Set token in HTTP-only cookie
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            });
 
             res.status(201).json({
                 message: 'User berhasil didaftarkan',
                 token,
-                user: {
-                    id: user._id.toString(),
-                    username: user.username,
-                    email: user.email,
-                    fullName: user.fullName,
-                    role: user.role
-                }
+                user: this.sanitizeUserData(user)
             });
 
         } catch (error) {
+            if (error.name === 'ValidationError') {
+                const errors = Object.values(error.errors).map(err => err.message);
+                return res.status(400).json({ errors });
+            }
+
             console.error('Register error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ 
+                error: 'Terjadi kesalahan saat pendaftaran' 
+            });
         }
     }
 
@@ -67,44 +95,106 @@ class AuthController {
         try {
             const { email, password } = req.body;
 
+            // Basic validation
             if (!email || !password) {
-                return res.status(400).json({ error: 'Email dan password harus diisi' });
+                return res.status(400).json({
+                    error: 'Email dan password harus diisi'
+                });
             }
 
             // Find user
-            const user = await this.collection.findOne({ email });
+            const user = await User.findOne({ 
+                email: email.toLowerCase() 
+            }).select('+password');
+
             if (!user) {
-                return res.status(401).json({ error: 'Email atau password salah' });
+                return res.status(401).json({
+                    error: 'Email atau password salah'
+                });
             }
 
-            // Verify password
-            const isValidPassword = await bcrypt.compare(password, user.password);
-            if (!isValidPassword) {
-                return res.status(401).json({ error: 'Email atau password salah' });
+            // Check password
+            const isMatch = await user.matchPassword(password);
+            if (!isMatch) {
+                // Increment failed login attempts or implement rate limiting here
+                return res.status(401).json({
+                    error: 'Email atau password salah'
+                });
             }
 
-            // Generate JWT token
-            const token = jwt.sign(
-                { userId: user._id.toString() },
-                process.env.JWT_SECRET || 'fallback-secret-key',
-                { expiresIn: '24h' }
-            );
+            // Generate token
+            const token = this.generateToken(user._id);
+
+            // Set token in HTTP-only cookie
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            });
 
             res.json({
                 message: 'Login berhasil',
                 token,
-                user: {
-                    id: user._id.toString(),
-                    username: user.username,
-                    email: user.email,
-                    fullName: user.fullName,
-                    role: user.role
-                }
+                user: this.sanitizeUserData(user)
             });
 
         } catch (error) {
             console.error('Login error:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ 
+                error: 'Terjadi kesalahan saat login' 
+            });
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            // Clear token cookie
+            res.clearCookie('token');
+            
+            res.json({
+                message: 'Logout berhasil'
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+            res.status(500).json({ 
+                error: 'Terjadi kesalahan saat logout' 
+            });
+        }
+    }
+
+    // Method untuk cek status autentikasi
+    async checkAuth(req, res) {
+        try {
+            const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+
+            if (!token) {
+                return res.status(401).json({
+                    authenticated: false,
+                    message: 'Token tidak ditemukan'
+                });
+            }
+
+            const decoded = jwt.verify(token, this.JWT_SECRET);
+            const user = await User.findById(decoded.userId);
+
+            if (!user) {
+                return res.status(401).json({
+                    authenticated: false,
+                    message: 'User tidak ditemukan'
+                });
+            }
+
+            res.json({
+                authenticated: true,
+                user: this.sanitizeUserData(user)
+            });
+
+        } catch (error) {
+            res.status(401).json({
+                authenticated: false,
+                message: 'Token tidak valid'
+            });
         }
     }
 }
