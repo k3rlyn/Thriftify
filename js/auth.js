@@ -295,15 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Implement a proper modal for terms & conditions
             const modal = document.createElement('div');
             modal.className = 'modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <h2>Syarat dan Ketentuan</h2>
-                    <div class="modal-body">
-                        <!-- Add terms content here -->
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()">Tutup</button>
-                </div>
-            `;
+           
             document.body.appendChild(modal);
         }
     }
