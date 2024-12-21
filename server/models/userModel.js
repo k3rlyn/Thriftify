@@ -1,111 +1,39 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: [true, 'Username harus diisi'],
+        required: true,
         unique: true,
-        trim: true,
-        minlength: [3, 'Username harus minimal 3 karakter']
+        trim: true
     },
     email: {
         type: String,
-        required: [true, 'Email harus diisi'],
+        required: true,
         unique: true,
         trim: true,
-        lowercase: true,
-        validate: {
-            validator: function(v) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-            },
-            message: 'Email tidak valid'
-        }
+        lowercase: true
     },
     password: {
         type: String,
-        required: [true, 'Password harus diisi'],
-        minlength: [6, 'Password harus minimal 6 karakter'],
-        select: false // Password tidak akan diambil kecuali explicit request
+        required: true
     },
     fullName: {
         type: String,
-        required: [true, 'Nama lengkap harus diisi'],
+        required: true,
         trim: true
-    },
-    role: {
-        type: String,
-        enum: ['user', 'admin'],
-        default: 'user'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 }, {
-    timestamps: true // Menambahkan createdAt dan updatedAt secara otomatis
+    timestamps: true
 });
 
-// Hash password sebelum disimpan
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next();
-    }
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Method untuk verifikasi password
-userSchema.methods.matchPassword = async function(enteredPassword) {
-    try {
-        return await bcrypt.compare(enteredPassword, this.password);
-    } catch (error) {
-        throw new Error('Error saat verifikasi password');
-    }
+// Add any custom methods if needed
+userSchema.methods.toJSON = function() {
+    const user = this.toObject();
+    delete user.password; // Don't send password in response
+    return user;
 };
-
-// Method untuk validasi data user
-userSchema.statics.validateUser = function(userData) {
-    const errors = [];
-    
-    if (!userData.username || userData.username.length < 3) {
-        errors.push('Username harus minimal 3 karakter');
-    }
-    
-    if (!userData.email || !userData.email.includes('@')) {
-        errors.push('Email tidak valid');
-    }
-    
-    if (!userData.password || userData.password.length < 6) {
-        errors.push('Password harus minimal 6 karakter');
-    }
-
-    if (!userData.fullName) {
-        errors.push('Nama lengkap harus diisi');
-    }
-    
-    return errors;
-};
-
-// Virtual field untuk id (jika diperlukan)
-userSchema.virtual('id').get(function() {
-    return this._id.toHexString();
-});
-
-// Konfigurasi untuk mengizinkan virtual fields
-userSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function(doc, ret) {
-        delete ret._id;
-        delete ret.password;
-    }
-});
 
 const User = mongoose.model('User', userSchema);
-module.exports = User;
+
+export default User;

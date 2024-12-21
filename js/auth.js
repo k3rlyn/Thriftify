@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: '', 
+        API_BASE_URL: 'window.location.origin + '/'',
         ENDPOINTS: {
             LOGIN: 'api/auth/login',
             REGISTER: 'api/auth/register'
@@ -130,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setLoading(false);
             }
         }
-    
 
         getFormData() {
             const data = {
@@ -189,41 +188,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = CONFIG.API_BASE_URL + CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
-                console.log('Making request to:', url);
+                // Debug logging
+                console.log('Making API call to:', url);
                 console.log('With data:', data);
         
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json' // Added Accept header
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(data),
-                    credentials: 'include'
+                    credentials: 'same-origin' // Changed from 'include' for Vercel
                 });
         
                 console.log('Response status:', response.status);
-                
-                // First check if response is ok before trying to parse
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({
-                        message: 'Server error occurred'
-                    }));
-                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    let errorMessage;
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        errorMessage = errorData.message;
+                    } catch {
+                        errorMessage = `HTTP error! status: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
                 }
                 
-                // Try to parse JSON response
                 try {
-                    const responseData = await response.json();
-                    return responseData;
+                    return JSON.parse(responseText);
                 } catch (parseError) {
                     console.error('JSON Parse error:', parseError);
-                    throw new Error('Server response format is invalid');
+                    throw new Error('Invalid response format from server');
                 }
             } catch (error) {
                 console.error('API call error:', error);
                 if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    throw new Error('Cannot connect to server. Please check your internet connection.');
+                    throw new Error('Cannot connect to server. Please check your connection.');
                 }
                 throw error;
             }
