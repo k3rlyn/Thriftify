@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: 'window.location.origin + '/'',
+        API_BASE_URL: window.location.origin + '/',
         ENDPOINTS: {
             LOGIN: 'api/auth/login',
             REGISTER: 'api/auth/register'
@@ -188,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = CONFIG.API_BASE_URL + CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
-                // Debug logging
                 console.log('Making API call to:', url);
                 console.log('With data:', data);
         
@@ -199,30 +198,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify(data),
-                    credentials: 'same-origin' // Changed from 'include' for Vercel
+                    credentials: 'same-origin'
                 });
         
-                console.log('Response status:', response.status);
                 const responseText = await response.text();
+                console.log('Response status:', response.status);
                 console.log('Raw response:', responseText);
 
-                if (!response.ok) {
-                    let errorMessage;
-                    try {
-                        const errorData = JSON.parse(responseText);
-                        errorMessage = errorData.message;
-                    } catch {
-                        errorMessage = `HTTP error! status: ${response.status}`;
-                    }
-                    throw new Error(errorMessage);
-                }
-                
+                // Try to parse as JSON even if response is not ok
+                let parsedResponse;
                 try {
-                    return JSON.parse(responseText);
+                    parsedResponse = JSON.parse(responseText);
                 } catch (parseError) {
                     console.error('JSON Parse error:', parseError);
                     throw new Error('Invalid response format from server');
                 }
+
+                // Handle non-200 responses after parsing
+                if (!response.ok) {
+                    throw new Error(parsedResponse.message || `HTTP error! status: ${response.status}`);
+                }
+                
+                return parsedResponse;
+
             } catch (error) {
                 console.error('API call error:', error);
                 if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
