@@ -218,17 +218,37 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = CONFIG.API_BASE_URL + CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
-                // Log complete request details
-                console.group('API Request Details');
-                console.log('URL:', url);
-                console.log('Method: POST');
-                console.log('Headers:', {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                // Debug URL construction
+                console.log('Full URL:', url);
+                console.log('API Base URL:', CONFIG.API_BASE_URL);
+                console.log('Endpoint:', CONFIG.ENDPOINTS[endpoint.toUpperCase()]);
+                
+                // Debug request data
+                console.log('Request Data:', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data, null, 2)
                 });
-                console.log('Request Payload:', JSON.stringify(data, null, 2));
-                console.groupEnd();
         
+                // Check server availability first
+                try {
+                    const pingResponse = await fetch(url, {
+                        method: 'OPTIONS'
+                    });
+                    console.log('Server ping status:', pingResponse.status);
+                } catch (pingError) {
+                    console.error('Server ping failed:', pingError);
+                    throw new Error(JSON.stringify({
+                        type: 'SERVER_UNAVAILABLE',
+                        message: 'Server is not responding. Please check if the server is running.',
+                        details: pingError.message
+                    }));
+                }
+        
+                // Make actual API call
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -240,54 +260,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         
                 const responseText = await response.text();
-                
-                // Log complete response details
-                console.group('API Response Details');
-                console.log('Status:', response.status);
-                console.log('Status Text:', response.statusText);
-                console.log('Headers:', Object.fromEntries([...response.headers]));
-                console.log('Raw Response:', responseText);
-                console.groupEnd();
+                console.log('Raw server response:', responseText);
         
                 let parsedResponse;
                 try {
                     parsedResponse = JSON.parse(responseText);
-                    console.log('Parsed Response:', parsedResponse);
                 } catch (parseError) {
-                    console.error('Failed to parse response:', parseError);
+                    console.error('Response parsing failed:', {
+                        text: responseText,
+                        error: parseError
+                    });
                     throw new Error(JSON.stringify({
                         type: 'PARSE_ERROR',
                         message: 'Invalid response format from server',
-                        details: responseText
+                        details: {
+                            responseText,
+                            parseError: parseError.message
+                        }
                     }));
                 }
         
                 if (!response.ok) {
+                    console.error('Server error details:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: Object.fromEntries([...response.headers]),
+                        body: parsedResponse
+                    });
+        
                     const errorDetails = {
-                        type: 'API_ERROR',
+                        type: this.getErrorType(response.status),
                         status: response.status,
                         message: parsedResponse.message || 'Unknown server error',
                         details: parsedResponse
                     };
-        
-                    switch (response.status) {
-                        case 400:
-                            errorDetails.type = 'VALIDATION_ERROR';
-                            console.warn('Validation Error:', parsedResponse);
-                            break;
-                        case 401:
-                            errorDetails.type = 'AUTH_ERROR';
-                            console.warn('Authentication Error:', parsedResponse);
-                            break;
-                        case 403:
-                            errorDetails.type = 'FORBIDDEN_ERROR';
-                            console.warn('Forbidden Error:', parsedResponse);
-                            break;
-                        case 500:
-                            errorDetails.type = 'SERVER_ERROR';
-                            console.error('Server Error:', parsedResponse);
-                            break;
-                    }
         
                     throw new Error(JSON.stringify(errorDetails));
                 }
@@ -295,16 +301,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 return parsedResponse;
         
             } catch (error) {
-                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    console.error('Network Error:', error);
-                    throw new Error(JSON.stringify({
-                        type: 'NETWORK_ERROR',
-                        message: 'Cannot connect to server. Please check your connection.',
-                        details: error.message
-                    }));
-                }
+                // Enhanced error logging
+                console.error('API call failed:', {
+                    url,
+                    data,
+                    error: error.message
+                });
                 throw error;
             }
+        }
+        
+        // Helper method to determine error type
+        getErrorType(status) {
+            const errorTypes = {
+                400: 'VALIDATION_ERROR',
+                401: 'AUTH_ERROR',
+                403: 'FORBIDDEN_ERROR',
+                404: 'NOT_FOUND_ERROR',
+                500: 'SERVER_ERROR',
+                502: 'BAD_GATEWAY_ERROR',
+                503: 'SERVICE_UNAVAILABLE_ERROR',
+                504: 'GATEWAY_TIMEOUT_ERROR'
+            };
+            return errorTypes[status] || 'UNKNOWN_ERROR';
         }
 
         async handleResponse(response, email) {
