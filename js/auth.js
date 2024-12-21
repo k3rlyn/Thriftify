@@ -218,8 +218,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = CONFIG.API_BASE_URL + CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
-                console.log('Making API call to:', url);
-                
+                // Log complete request details
+                console.group('API Request Details');
+                console.log('URL:', url);
+                console.log('Method: POST');
+                console.log('Headers:', {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                });
+                console.log('Request Payload:', JSON.stringify(data, null, 2));
+                console.groupEnd();
+        
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -231,20 +240,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         
                 const responseText = await response.text();
-                console.log('Response status:', response.status);
                 
+                // Log complete response details
+                console.group('API Response Details');
+                console.log('Status:', response.status);
+                console.log('Status Text:', response.statusText);
+                console.log('Headers:', Object.fromEntries([...response.headers]));
+                console.log('Raw Response:', responseText);
+                console.groupEnd();
+        
                 let parsedResponse;
                 try {
                     parsedResponse = JSON.parse(responseText);
+                    console.log('Parsed Response:', parsedResponse);
                 } catch (parseError) {
-                    throw new Error({
+                    console.error('Failed to parse response:', parseError);
+                    throw new Error(JSON.stringify({
                         type: 'PARSE_ERROR',
                         message: 'Invalid response format from server',
                         details: responseText
-                    });
+                    }));
                 }
         
-                // Handle different types of errors with more specific information
                 if (!response.ok) {
                     const errorDetails = {
                         type: 'API_ERROR',
@@ -253,19 +270,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         details: parsedResponse
                     };
         
-                    // Handle specific status codes
                     switch (response.status) {
                         case 400:
                             errorDetails.type = 'VALIDATION_ERROR';
+                            console.warn('Validation Error:', parsedResponse);
                             break;
                         case 401:
                             errorDetails.type = 'AUTH_ERROR';
+                            console.warn('Authentication Error:', parsedResponse);
                             break;
                         case 403:
                             errorDetails.type = 'FORBIDDEN_ERROR';
+                            console.warn('Forbidden Error:', parsedResponse);
                             break;
                         case 500:
                             errorDetails.type = 'SERVER_ERROR';
+                            console.error('Server Error:', parsedResponse);
                             break;
                     }
         
@@ -275,8 +295,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return parsedResponse;
         
             } catch (error) {
-                // Handle network errors
                 if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    console.error('Network Error:', error);
                     throw new Error(JSON.stringify({
                         type: 'NETWORK_ERROR',
                         message: 'Cannot connect to server. Please check your connection.',
