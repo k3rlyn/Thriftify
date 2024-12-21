@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: '/api', 
+        API_BASE_URL: '', 
         ENDPOINTS: {
             LOGIN: 'api/auth/login',
             REGISTER: 'api/auth/register'
