@@ -8,14 +8,6 @@ Smart Thrifting Marketplace bernama Thriftify merupakan sebuah layanan platform 
 
 Prototype yang dikembangkan berfokus pada proses bisnis manajemen penjual yang diimplementasikan dalam bentuk website Thriftify. Melalui website Thriftify, user dapat melakukan autentikasi (register dan login), update profil akun, membuka/mendaftarkan toko, update profil toko, dan daftar unggahan/postingan produk barang bekas (second-hand) yang dijual oleh user lain.
 
-## Disusun oleh:
-
-- **Yasra Zhafirah	- 18222002**
-- **M. Rifa Ansyari	- 18222004**
-- **Vini Putiasa - 18222030**
-- **Natanael Steven Simangunsong - 18222054**
-- **Kerlyn Deslia Andeskar - 18222090**
-
 ---
 
 **KELOMPOK 5 K02**

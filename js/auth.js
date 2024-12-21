@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: '/api/auth', 
+        API_BASE_URL: '', 
         ENDPOINTS: {
-            LOGIN: '/login',
-            REGISTER: '/register'
+            LOGIN: 'api/auth/login',
+            REGISTER: 'api/auth/register'
         },
-        REDIRECT_URL: '/landingPage.html'  
+        REDIRECT_URL: '/pages/landingPage.html'  
     };  
 
     class AuthManager {
@@ -69,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         showError(message, fieldId = null) {
-            // Create or update error message element
+            const errorMessage = typeof message === 'object' ? 
+                JSON.stringify(message) : message.toString();
+        
             const errorId = fieldId ? `${fieldId}-error` : 'form-error';
             let errorElement = document.getElementById(errorId);
             
@@ -85,38 +87,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.form.insertBefore(errorElement, this.form.firstChild);
                 }
             }
-
-            errorElement.textContent = message;
+        
+            errorElement.textContent = errorMessage;
             errorElement.style.display = 'block';
-        }
-
-        clearErrors() {
-            const errors = document.querySelectorAll('.error-message');
-            errors.forEach(error => error.style.display = 'none');
         }
 
         async handleSubmit(e) {
             e.preventDefault();
             this.clearErrors();
         
-            const formData = this.getFormData();
-            if (!this.validateForm(formData)) return;
-        
             try {
+                const formData = this.getFormData();
+                if (!this.validateForm(formData)) return;
+        
                 this.setLoading(true);
-                const endpoint = this.isLoginPage ? 'login' : 'register';
+                const endpoint = this.isLoginPage ? 'LOGIN' : 'REGISTER';
                 
-                // Tambahkan logging untuk debug
-                console.log('Sending request to:', endpoint);
-                console.log('Request data:', formData);
-                
+                console.log('Attempting to', endpoint);
                 const response = await this.makeApiCall(endpoint, formData);
                 
-                console.log('Response received:', response);
-                await this.handleResponse(response, formData.email);
-                
+                if (response.success) {
+                    if (response.token) {
+                        this.saveToken(response.token);
+                        if (document.getElementById('remember')?.checked) {
+                            localStorage.setItem('rememberedEmail', formData.email);
+                        }
+                        window.location.href = CONFIG.REDIRECT_URL;
+                    }
+                } else {
+                    throw new Error(response.message || 'Login gagal');
+                }
             } catch (error) {
-                console.error('Error details:', error);
+                console.error('Submit error:', error);
                 this.showError(error.message || 'Terjadi kesalahan, silakan coba lagi');
             } finally {
                 this.setLoading(false);
@@ -177,39 +179,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         async makeApiCall(endpoint, data) {
-            const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS[endpoint.toUpperCase()]}`;
+            const url = CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
+                // Debug log
+                console.log('Making request to:', url);
+                console.log('With data:', data);
+        
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'  // Tambahkan header ini
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data),
+                    credentials: 'include' // Penting untuk cookies
                 });
         
-                // Tangani response non-JSON
-                let responseData;
-                const contentType = response.headers.get('content-type');
+                // Log response untuk debug
+                console.log('Response status:', response.status);
                 
-                if (contentType && contentType.includes('application/json')) {
-                    responseData = await response.json();
-                } else {
-                    const textResponse = await response.text();
-                    throw new Error(`Server returned non-JSON response: ${textResponse}`);
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+        
+                // Coba parse response sebagai JSON
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error('Response server tidak valid');
                 }
         
                 if (!response.ok) {
-                    throw new Error(responseData.error || responseData.message || 'Terjadi kesalahan pada server');
+                    throw new Error(responseData.message || 'Terjadi kesalahan pada server');
                 }
         
                 return responseData;
             } catch (error) {
-                if (error.name === 'SyntaxError') {
-                    throw new Error('Response server tidak valid');
-                }
-                throw new Error(error.message || `Gagal melakukan ${endpoint}`);
+                console.error('API call error:', error);
+                throw new Error(error.message || 'Gagal terhubung ke server');
             }
         }
 

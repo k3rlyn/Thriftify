@@ -29,64 +29,58 @@ class AuthController {
     async register(req, res) {
         try {
             const { username, email, password, fullName } = req.body;
-
-            // Basic input validation
+    
             if (!username || !email || !password || !fullName) {
                 return res.status(400).json({
-                    error: 'Semua field harus diisi'
+                    success: false,
+                    message: 'Semua field harus diisi'
                 });
             }
-
-            // Check existing user
+    
             const userExists = await User.findOne({
                 $or: [
                     { email: email.toLowerCase() },
                     { username: username.toLowerCase() }
                 ]
             });
-
+    
             if (userExists) {
                 return res.status(400).json({
-                    error: userExists.email === email.toLowerCase() ?
+                    success: false,
+                    message: userExists.email === email.toLowerCase() ?
                         'Email sudah terdaftar' :
                         'Username sudah digunakan'
                 });
             }
-
-            // Create user
+    
             const user = await User.create({
                 username: username.toLowerCase(),
                 email: email.toLowerCase(),
                 password,
                 fullName
             });
-
-            // Generate token
+    
             const token = this.generateToken(user._id);
-
-            // Set token in HTTP-only cookie
+    
             res.cookie('token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+                maxAge: 24 * 60 * 60 * 1000
             });
-
+    
             res.status(201).json({
+                success: true,
                 message: 'User berhasil didaftarkan',
                 token,
                 user: this.sanitizeUserData(user)
             });
-
+    
         } catch (error) {
-            if (error.name === 'ValidationError') {
-                const errors = Object.values(error.errors).map(err => err.message);
-                return res.status(400).json({ errors });
-            }
-
             console.error('Register error:', error);
             res.status(500).json({ 
-                error: 'Terjadi kesalahan saat pendaftaran' 
+                success: false,
+                message: 'Terjadi kesalahan saat pendaftaran' 
             });
         }
     }
@@ -94,37 +88,39 @@ class AuthController {
     async login(req, res) {
         try {
             const { email, password } = req.body;
-
+    
             // Basic validation
             if (!email || !password) {
                 return res.status(400).json({
-                    error: 'Email dan password harus diisi'
+                    success: false,
+                    message: 'Email dan password harus diisi'
                 });
             }
-
+    
             // Find user
             const user = await User.findOne({ 
                 email: email.toLowerCase() 
             }).select('+password');
-
+    
             if (!user) {
                 return res.status(401).json({
-                    error: 'Email atau password salah'
+                    success: false,
+                    message: 'Email atau password salah'
                 });
             }
-
+    
             // Check password
             const isMatch = await user.matchPassword(password);
             if (!isMatch) {
-                // Increment failed login attempts or implement rate limiting here
                 return res.status(401).json({
-                    error: 'Email atau password salah'
+                    success: false,
+                    message: 'Email atau password salah'
                 });
             }
-
+    
             // Generate token
             const token = this.generateToken(user._id);
-
+    
             // Set token in HTTP-only cookie
             res.cookie('token', token, {
                 httpOnly: true,
@@ -132,17 +128,19 @@ class AuthController {
                 sameSite: 'strict',
                 maxAge: 24 * 60 * 60 * 1000 // 24 hours
             });
-
+    
             res.json({
+                success: true,
                 message: 'Login berhasil',
                 token,
                 user: this.sanitizeUserData(user)
             });
-
+    
         } catch (error) {
             console.error('Login error:', error);
             res.status(500).json({ 
-                error: 'Terjadi kesalahan saat login' 
+                success: false,
+                message: 'Terjadi kesalahan saat login' 
             });
         }
     }
