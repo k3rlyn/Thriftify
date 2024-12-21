@@ -121,11 +121,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     window.location.href = CONFIG.REDIRECT_URL;
                 } else {
-                    throw new Error('No authentication token received');
+                    throw new Error(JSON.stringify({
+                        type: 'TOKEN_ERROR',
+                        message: 'No authentication token received'
+                    }));
                 }
             } catch (error) {
                 console.error('Submit error:', error);
-                this.showError(error.message || 'An error occurred. Please try again.');
+                
+                let errorDetails;
+                try {
+                    errorDetails = JSON.parse(error.message);
+                } catch {
+                    errorDetails = {
+                        type: 'UNKNOWN_ERROR',
+                        message: error.message || 'An unexpected error occurred'
+                    };
+                }
+        
+                // Show appropriate error messages based on error type
+                switch (errorDetails.type) {
+                    case 'VALIDATION_ERROR':
+                        this.showError('Please check your input and try again.');
+                        break;
+                    case 'AUTH_ERROR':
+                        this.showError('Invalid credentials. Please try again.');
+                        break;
+                    case 'SERVER_ERROR':
+                        this.showError('Server error. Please try again later.');
+                        break;
+                    case 'NETWORK_ERROR':
+                        this.showError('Connection error. Please check your internet connection.');
+                        break;
+                    default:
+                        this.showError(errorDetails.message || 'An error occurred. Please try again.');
+                }
             } finally {
                 this.setLoading(false);
             }
@@ -189,8 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 console.log('Making API call to:', url);
-                console.log('With data:', data);
-        
+                
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -203,28 +232,56 @@ document.addEventListener('DOMContentLoaded', function() {
         
                 const responseText = await response.text();
                 console.log('Response status:', response.status);
-                console.log('Raw response:', responseText);
-
-                // Try to parse as JSON even if response is not ok
+                
                 let parsedResponse;
                 try {
                     parsedResponse = JSON.parse(responseText);
                 } catch (parseError) {
-                    console.error('JSON Parse error:', parseError);
-                    throw new Error('Invalid response format from server');
+                    throw new Error({
+                        type: 'PARSE_ERROR',
+                        message: 'Invalid response format from server',
+                        details: responseText
+                    });
                 }
-
-                // Handle non-200 responses after parsing
+        
+                // Handle different types of errors with more specific information
                 if (!response.ok) {
-                    throw new Error(parsedResponse.message || `HTTP error! status: ${response.status}`);
+                    const errorDetails = {
+                        type: 'API_ERROR',
+                        status: response.status,
+                        message: parsedResponse.message || 'Unknown server error',
+                        details: parsedResponse
+                    };
+        
+                    // Handle specific status codes
+                    switch (response.status) {
+                        case 400:
+                            errorDetails.type = 'VALIDATION_ERROR';
+                            break;
+                        case 401:
+                            errorDetails.type = 'AUTH_ERROR';
+                            break;
+                        case 403:
+                            errorDetails.type = 'FORBIDDEN_ERROR';
+                            break;
+                        case 500:
+                            errorDetails.type = 'SERVER_ERROR';
+                            break;
+                    }
+        
+                    throw new Error(JSON.stringify(errorDetails));
                 }
                 
                 return parsedResponse;
-
+        
             } catch (error) {
-                console.error('API call error:', error);
+                // Handle network errors
                 if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    throw new Error('Cannot connect to server. Please check your connection.');
+                    throw new Error(JSON.stringify({
+                        type: 'NETWORK_ERROR',
+                        message: 'Cannot connect to server. Please check your connection.',
+                        details: error.message
+                    }));
                 }
                 throw error;
             }
