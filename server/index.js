@@ -9,7 +9,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cookieParser());
+app.use('/api/auth', authRoutes);
 app.use(cors({
     origin: ['https://thriftify.vercel.app', 'http://localhost:3000'], 
     credentials: true,

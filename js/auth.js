@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: 'https://thriftify.vercel.app/api/auth', 
+        API_BASE_URL: '/api/auth', 
         ENDPOINTS: {
             LOGIN: '/login',
             REGISTER: '/register'
@@ -98,16 +98,25 @@ document.addEventListener('DOMContentLoaded', function() {
         async handleSubmit(e) {
             e.preventDefault();
             this.clearErrors();
-
+        
             const formData = this.getFormData();
             if (!this.validateForm(formData)) return;
-
+        
             try {
                 this.setLoading(true);
                 const endpoint = this.isLoginPage ? 'login' : 'register';
+                
+                // Tambahkan logging untuk debug
+                console.log('Sending request to:', endpoint);
+                console.log('Request data:', formData);
+                
                 const response = await this.makeApiCall(endpoint, formData);
+                
+                console.log('Response received:', response);
                 await this.handleResponse(response, formData.email);
+                
             } catch (error) {
+                console.error('Error details:', error);
                 this.showError(error.message || 'Terjadi kesalahan, silakan coba lagi');
             } finally {
                 this.setLoading(false);
@@ -119,14 +128,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: document.getElementById('email').value.trim(),
                 password: document.getElementById('password').value
             };
-
-            if (!this.isLoginPage) {
-                Object.assign(data, {
-                    username: document.getElementById('username').value.trim(),
-                    fullName: document.getElementById('fullName').value.trim()
-                });
+        
+            // Validasi dasar
+            if (!data.email || !data.password) {
+                throw new Error('Email dan password harus diisi');
             }
-
+        
+            if (!this.isLoginPage) {
+                const username = document.getElementById('username')?.value.trim();
+                const fullName = document.getElementById('fullName')?.value.trim();
+                
+                if (!username || !fullName) {
+                    throw new Error('Semua field harus diisi');
+                }
+                
+                Object.assign(data, { username, fullName });
+            }
+        
             return data;
         }
 
@@ -165,20 +183,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'  // Tambahkan header ini
                     },
                     body: JSON.stringify(data)
                 });
         
-                const responseData = await response.json();
+                // Tangani response non-JSON
+                let responseData;
+                const contentType = response.headers.get('content-type');
                 
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    const textResponse = await response.text();
+                    throw new Error(`Server returned non-JSON response: ${textResponse}`);
+                }
+        
                 if (!response.ok) {
-                    throw new Error(responseData.error || 'Terjadi kesalahan');
+                    throw new Error(responseData.error || responseData.message || 'Terjadi kesalahan pada server');
                 }
         
                 return responseData;
             } catch (error) {
-                console.error(`${endpoint} error:`, error);
+                if (error.name === 'SyntaxError') {
+                    throw new Error('Response server tidak valid');
+                }
                 throw new Error(error.message || `Gagal melakukan ${endpoint}`);
             }
         }
