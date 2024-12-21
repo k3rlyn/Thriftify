@@ -228,7 +228,12 @@ html, body {
     margin: 0;
     flex-shrink: 0;
 }
-
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+}
 /* Responsive adjustments */
 @media screen and (max-width: 480px) {
     body {

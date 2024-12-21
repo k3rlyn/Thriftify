@@ -67,7 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     `Password minimal ${CONFIG.MIN_PASSWORD_LENGTH} karakter` : ''
             };
         }
-
+        
+        clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+        
         showError(message, fieldId = null) {
             const errorMessage = typeof message === 'object' ? 
                 JSON.stringify(message) : message.toString();
@@ -94,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async handleSubmit(e) {
             e.preventDefault();
+            console.log('Form submitted'); 
             this.clearErrors();
         
             try {
