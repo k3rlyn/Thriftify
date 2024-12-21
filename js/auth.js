@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         MIN_PASSWORD_LENGTH: 8,
-        API_BASE_URL: '', 
+        API_BASE_URL: '/api', 
         ENDPOINTS: {
             LOGIN: 'api/auth/login',
             REGISTER: 'api/auth/register'
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.style.display = 'none';
             });
         }
-        
+
         showError(message, fieldId = null) {
             const errorMessage = typeof message === 'object' ? 
                 JSON.stringify(message) : message.toString();
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         async handleSubmit(e) {
             e.preventDefault();
-            console.log('Form submitted'); 
+            console.log('Form submitted');
             this.clearErrors();
         
             try {
@@ -111,27 +111,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.setLoading(true);
                 const endpoint = this.isLoginPage ? 'LOGIN' : 'REGISTER';
                 
-                console.log('Attempting to', endpoint);
+                console.log('Attempting', endpoint);
                 const response = await this.makeApiCall(endpoint, formData);
                 
-                if (response.success) {
-                    if (response.token) {
-                        this.saveToken(response.token);
-                        if (document.getElementById('remember')?.checked) {
-                            localStorage.setItem('rememberedEmail', formData.email);
-                        }
-                        window.location.href = CONFIG.REDIRECT_URL;
+                if (response.token) {
+                    this.saveToken(response.token);
+                    if (document.getElementById('remember')?.checked) {
+                        localStorage.setItem('rememberedEmail', formData.email);
                     }
+                    window.location.href = CONFIG.REDIRECT_URL;
                 } else {
-                    throw new Error(response.message || 'Login gagal');
+                    throw new Error('No authentication token received');
                 }
             } catch (error) {
                 console.error('Submit error:', error);
-                this.showError(error.message || 'Terjadi kesalahan, silakan coba lagi');
+                this.showError(error.message || 'An error occurred. Please try again.');
             } finally {
                 this.setLoading(false);
             }
         }
+    
 
         getFormData() {
             const data = {
@@ -187,44 +186,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         async makeApiCall(endpoint, data) {
-            const url = CONFIG.ENDPOINTS[endpoint.toUpperCase()];
+            const url = CONFIG.API_BASE_URL + CONFIG.ENDPOINTS[endpoint.toUpperCase()];
             
             try {
-                // Debug log
                 console.log('Making request to:', url);
                 console.log('With data:', data);
         
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json' // Added Accept header
                     },
                     body: JSON.stringify(data),
-                    credentials: 'include' // Penting untuk cookies
+                    credentials: 'include'
                 });
         
-                // Log response untuk debug
                 console.log('Response status:', response.status);
                 
-                const responseText = await response.text();
-                console.log('Raw response:', responseText);
-        
-                // Coba parse response sebagai JSON
-                let responseData;
-                try {
-                    responseData = JSON.parse(responseText);
-                } catch (e) {
-                    throw new Error('Response server tidak valid');
-                }
-        
+                // First check if response is ok before trying to parse
                 if (!response.ok) {
-                    throw new Error(responseData.message || 'Terjadi kesalahan pada server');
+                    const errorData = await response.json().catch(() => ({
+                        message: 'Server error occurred'
+                    }));
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
                 }
-        
-                return responseData;
+                
+                // Try to parse JSON response
+                try {
+                    const responseData = await response.json();
+                    return responseData;
+                } catch (parseError) {
+                    console.error('JSON Parse error:', parseError);
+                    throw new Error('Server response format is invalid');
+                }
             } catch (error) {
                 console.error('API call error:', error);
-                throw new Error(error.message || 'Gagal terhubung ke server');
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    throw new Error('Cannot connect to server. Please check your internet connection.');
+                }
+                throw error;
             }
         }
 
